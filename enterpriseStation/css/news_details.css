@@ -1,0 +1,19 @@
+.container_news_details{
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.m_top{
+    min-height: 80px;
+    color: white;
+    background-color: #343a40!important;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 10px;
+}
+.title{
+    border-left: 8px solid red;
+    font-size: 22px;
+    padding-left: 10px;
+}
