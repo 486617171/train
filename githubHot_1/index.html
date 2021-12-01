@@ -90,11 +90,6 @@
             // 初始化获取数据
             async componentDidMount() {
                 await this.getData(this.props.type);
-
-                // window.onscroll = () => {
-
-
-                // }
                 window.addEventListener('scroll', this.throttle(() => {
                     // 滚动加载更多
                     // console.log(window.scrollY); 滚动条距离顶部
@@ -102,7 +97,7 @@
                     // console.log(document.body.scrollHeight); body整体高度
                     if (window.scrollY + document.documentElement.clientHeight === document.body.scrollHeight) {
                         // 判断加载的页数是否已超出
-                        if(this.page_nub < Math.ceil(this.state.total / 30)){
+                        if (this.page_nub < Math.ceil(this.state.total / 30)) {
                             this.setState({
                                 loading: true
                             }, () => {
@@ -115,13 +110,18 @@
                     // 滚动加载图片
                     let imgDoms = document.getElementsByTagName('img');
                     for (let i = 0; i < imgDoms.length; i++) {
-                        if (imgDoms[i].offsetTop <= (document.documentElement.clientHeight + window.scrollY + 500) && imgDoms[i].getAttribute('data-src') !== imgDoms[i].getAttribute('src')) {
+                        if (imgDoms[i].offsetTop <= (document.documentElement.clientHeight + window.scrollY + 200) && imgDoms[i].getAttribute('data-src') !== imgDoms[i].getAttribute('src')) {
                             imgDoms[i].setAttribute('src', imgDoms[i].getAttribute('data-src'));
                         }
                     }
-                }, 800));
+                }, 500));
 
             }
+
+            componentWillUnmount(){
+                window.removeEventListener('scroll',this.throttle);
+            }
+
 
             throttle = (func, delay) => {
                 var timer = null;
@@ -161,7 +161,6 @@
                 }
                 this.timer = setTimeout(async () => {
                     const { total_count, items } = await fetch(`https://api.github.com/search/repositories?q=stars:%3E1+${type ? 'language:' + type.toLowerCase() : ''}&sort=stars&order=desc&type=Repositories&page=${this.page_nub}`).then(res => res.json()).then(res => res);
-                    console.log('获取到数据');
                     this.setState({
                         data: [...this.state.data, ...items],
                         total: total_count,
@@ -191,11 +190,11 @@
                         }
                     </div>
 
-                    <div style={{ textAlign: 'center', width: '100%',height:'40px',lineHeight:'40px' }}>
+                    <div style={{ textAlign: 'center', width: '100%', height: '40px', lineHeight: '40px' }}>
                         {
-                            loading ? <span><i class="fa fa-spin fa-spinner" />loading...</span>: null
+                            loading ? <span><i class="fa fa-spin fa-spinner" />loading...</span> : null
                         }
-                    </div> 
+                    </div>
                 </div>
             }
         }
@@ -204,17 +203,26 @@
 
             const { name, owner, stargazers_count, forks, open_issues, html_url, full_name } = props.data;
 
+            const textConfig = [
+                { icon: 'fa fa-star', name: 'stars', data: stargazers_count, color: 'rgb(255, 215, 0)' },
+                { icon: 'fa fa-code-fork', name: 'forks', data: forks, color: 'rgb(129, 195, 245)' },
+                { icon: 'fa fa-warning', name: 'Open issues', data: open_issues, color: 'rgb(241, 138, 147)' },
+            ];
+
             return <div style={{ width: '23%', backgroundColor: 'rgba(0, 0, 0, 0.08)', marginTop: '20px', borderRadius: '8px' }}>
                 <div style={{ textAlign: 'center' }}>
                     <h2>#{props.index + 1}</h2>
-                    <img src="https://avatars.githubusercontent.com/u/9892522?v=4" data-src={owner.avatar_url} alt="" width="50%" />
+                    <img src={(props.index + 1) % 30 < 3 ? owner.avatar_url : "https://avatars.githubusercontent.com/u/9892522?v=4"} data-src={owner.avatar_url} alt="" width="50%" />
                     <p style={{ fontWeight: 600 }}><a href={html_url}>{full_name}</a></p>
                 </div>
                 <div style={{ padding: '20px 40px' }}>
-                    <div><i style={{ color: 'rgb(255, 191, 116)', width: '16px', textAlign: 'center' }} class="fa fa-user"></i><a href={html_url}>{name}</a></div>
-                    <div><i style={{ color: 'rgb(255, 215, 0)', width: '16px', textAlign: 'center' }} class="fa fa-star"></i>{stargazers_count} stars</div>
-                    <div><i style={{ color: 'rgb(129, 195, 245)', width: '16px', textAlign: 'center' }} class="fa fa-code-fork"></i>{forks} forks</div>
-                    <div><i style={{ color: 'rgb(241, 138, 147)', width: '16px', textAlign: 'center' }} class="fa fa-warning"></i>{open_issues} Open issues</div>
+                    <div>
+                        <i style={{ color: 'rgb(255, 191, 116)', width: '16px', textAlign: 'center' }} class="fa fa-user"></i>
+                        <a href={html_url}>{name}</a>
+                    </div>
+                    {
+                        textConfig.map(item => <div><i style={{ color: item.color, width: '16px', textAlign: 'center' }} class={item.icon}></i>{item.data + ' ' + item.name}</div>)
+                    }
                 </div>
             </div>
         }
