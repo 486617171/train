@@ -6,6 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Git Hub Hot</title>
+    <link rel="stylesheet" href="./css/init.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+        integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -17,18 +21,247 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
     <script type="text/babel">
-        ReactDOM.render(
-            Header(),
-            document.getElementById('app')
-        );
 
-        function Header(){
+        function App() {
             return (
                 <div>
-                    <a href=""></a>    
+                    <Header />
+                    <Main />
+                    <Footer />
                 </div>
             );
         }
+
+        function Header() {
+            return (
+                <div style={{ height: '30px', lineHeight: '30px', fontSize: '20px' }}>
+                    <a href="index.html">Popular</a>
+                    <a href="javascript:void(0)" style={{ marginLeft: '20px', color: '#1890ff' }}>Battle</a>
+                </div>
+            );
+        }
+
+        class Main extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    user1: null,
+                    user2: null,
+                    type: true
+                };
+            }
+
+            getUsers = (type, val) => {
+                this.setState({
+                    [type]: val
+                })
+            }
+
+            typeChange = () => {
+                if (!this.state.type) {
+                    this.setState({
+                        user1: null,
+                        user2: null
+                    })
+                }
+                this.setState({
+                    type: !this.state.type
+                });
+            }
+
+            render() {
+                const { user1, user2, type } = this.state;
+                return (
+                    <div style={{ padding: '20px' }}>
+                        {
+                            type ? <Tab_1 getUsers={this.getUsers} /> : <Tab_2 user={[user1, user2]} />
+                        }
+                        <div style={{ textAlign: 'center' }}>
+                            {
+                                user1 && user2 ? <button onClick={this.typeChange} style={{ padding: '16px 32px' }}>{type ? 'Battle' : 'RESET'}</button> : null
+                            }
+                        </div>
+                    </div>
+                );
+            }
+        }
+
+        class Tab_1 extends React.PureComponent {
+            constructor(props) {
+                super(props);
+                this.state = {};
+                this.textConfig = [
+                    { name: 'Enter two Github:', icon: 'fa fa-users', color: 'rgb(255, 191, 116)' },
+                    { name: 'Battle', icon: 'fa fa-fighter-jet', color: 'gray' },
+                    { name: 'See the winner', icon: 'fa fa-trophy', color: '#f4ea2a' },
+                ];
+            }
+
+            setUser1 = (val) => {
+                this.props.getUsers('user1', val)
+            }
+
+            setUser2 = (val) => {
+                this.props.getUsers('user2', val)
+            }
+
+            render() {
+
+                return <div>
+                    <h2 style={{ textAlign: 'center' }}>Instructions</h2>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        {
+                            this.textConfig.map(item => <div style={{ textAlign: 'center', margin: '0 40px' }}>
+                                <p style={{ fontSize: '20px' }}>{item.name}</p>
+                                <i class={item.icon} style={{ fontSize: '120px', color: item.color, padding: '30px', backgroundColor: '#eeeeee' }}></i>
+                            </div>)
+                        }
+                    </div>
+                    <h2 style={{ textAlign: 'center' }}>Players</h2>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <InputItem title="Player One" styles={{ width: '50%' }} setData={this.setUser1} />
+                        <InputItem title="Player Two" styles={{ width: '50%' }} setData={this.setUser2} />
+                    </div>
+                </div>
+            }
+        }
+
+        class InputItem extends React.PureComponent {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    inputValue: '',
+                    type: true
+                };
+            }
+            inputChange = (e) => {
+                this.setState({
+                    inputValue: e.target.value
+                })
+            }
+            submit = () => {
+                let imgs = new Image;
+                imgs.src = `https://github.com/${this.state.inputValue}.png?size=200`;
+                imgs.onload = () => {
+                    this.setState({
+                        type: false
+                    }, () => {
+                        this.props.setData(this.state.inputValue);
+                    });
+                }
+                imgs.onerror = () => {
+                    alert('未获取到该用户信息，请重新输入');
+                }
+            }
+            closeBox = () => {
+                this.setState({
+                    type: true,
+                    inputValue: ''
+                }, () => {
+                    this.props.setData(null);
+                });
+            }
+
+            render() {
+                const { title, styles } = this.props;
+                const { inputValue, type } = this.state;
+                return <div style={{ ...styles, padding: '10px' }}>
+                    <h3>{title}</h3>
+                    {
+                        type ?
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <input placeholder="github username" style={{ width: '65%', height: '40px', fontSize: '20px' }} type="text" name="" value={this.state.inputValue} onChange={this.inputChange} />
+                                <button style={{ width: '30%', height: '45px' }} disabled={inputValue ? false : true} onClick={this.submit}>Submit</button>
+                            </div> :
+                            <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', backgroundColor: '#dfdfdf', padding: '15px', borderRadius: '4px', boxSizing: 'border-box' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <img src={"https://github.com/" + inputValue + ".png?size=200"} style={{ borderRadius: '8px' }} width="80px" height="80px" />
+                                    <span style={{ fontSize: '30px', marginLeft: '10px' }}>{inputValue}</span>
+                                </div>
+                                <div style={{ lineHeight: '80px' }}>
+                                    <button onClick={this.closeBox}>X</button>
+                                </div>
+                            </div>
+                    }
+                </div>
+            }
+        }
+
+        class Tab_2 extends React.Component {
+
+            constructor(props) {
+                super(props);
+                this.state = {
+                    data: null
+                };
+            }
+
+            componentDidMount() {
+                const user = this.props.user;
+                Promise.all([this.getUserData(user[0]), this.getUserData(user[1])]).then(res => {
+                    if (res.length >= 2) {
+                        if (res[0].public_repos > res[1].public_repos) {
+                            res[0].ranking_page = 'Winner';
+                            res[1].ranking_page = 'Loser';
+                        } else if (res[0].public_repos < res[1].public_repos) {
+                            res[0].ranking_page = 'Loser';
+                            res[1].ranking_page = 'Winner';
+                        } else {
+                            res[0].ranking_page = 'it ends in a draw';
+                            res[1].ranking_page = 'it ends in a draw';
+                        }
+                        this.setState({
+                            data: res
+                        })
+                    }
+                });
+            }
+
+            getUserData(id) {
+                return new Promise((resolve, reject) => {
+                    fetch('https://api.github.com/users/' + id).then(res => res.json()).then(res => {
+                        resolve(res);
+                    });
+                });
+            }
+
+            render() {
+                const { data } = this.state;
+                return <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+                    {
+                        data ? data.map(({ ranking_page, avatar_url, public_repos, name, location, followers, following }) => <div style={{ backgroundColor: '#dddddd', padding: '30px', borderRadius: '5px' }}>
+                            <div style={{ textAlign: 'center' }}>
+                                <h3>{ranking_page}</h3>
+                                <img src={avatar_url} alt="" width="200px" height="200px" />
+                                <h4>Scores:{public_repos}</h4>
+                                <h2>{name}</h2>
+                            </div>
+                            <div>
+                                <ul>
+                                    <li><i style={{ width: '16px', textAlign: 'center', marginRight: '4px' }} class="fa fa-location-arrow"></i>{location}</li>
+                                    <li><i style={{ width: '16px', textAlign: 'center', marginRight: '4px' }} class="fa fa-group"></i>{followers}</li>
+                                    <li><i style={{ width: '16px', textAlign: 'center', marginRight: '4px' }} class="fa fa-user-plus"></i>{following}</li>
+                                    <li><i style={{ width: '16px', textAlign: 'center', marginRight: '4px' }} class="fa fa-code"></i>{public_repos}</li>
+                                </ul>
+                            </div>
+                        </div>) : <span><i class="fa fa-spin fa-spinner" />loading...</span>
+                    }
+                </div>
+            }
+        }
+
+
+        function Footer() {
+            return <div style={{ height: '48px', lineHeight: '48px', backgroundColor: 'rgb(239, 239, 239)', textAlign: 'center' }}>
+                版权所有
+            </div>
+        }
+
+
+        ReactDOM.render(
+            <App />,
+            document.getElementById('app')
+        );
 
     </script>
 </body>

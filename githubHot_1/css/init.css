@@ -21,6 +21,7 @@
   body {
     margin: 0;
     padding: 40px;
+    min-width: 800px;
   }
    
   /**
@@ -353,3 +354,10 @@
     display: none;
   }
    
+ul,li{
+  list-style: none;
+  padding: 0;
+}
+li{
+  margin: 5px 0;
+}

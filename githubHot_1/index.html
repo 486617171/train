@@ -27,6 +27,7 @@
                 <div>
                     <Header />
                     <Main />
+                    <Footer />
                 </div>
             );
         }
@@ -71,6 +72,12 @@
                     </div>
                 );
             }
+        }
+
+        function Footer() {
+            return <div style={{height:'48px',lineHeight:'48px',backgroundColor: 'rgb(239, 239, 239)',textAlign:'center'}}>
+                版权所有
+            </div>
         }
 
         class HotBox extends React.Component {
@@ -212,13 +219,13 @@
             return <div style={{ width: '23%', backgroundColor: 'rgba(0, 0, 0, 0.08)', marginTop: '20px', borderRadius: '8px' }}>
                 <div style={{ textAlign: 'center' }}>
                     <h2>#{props.index + 1}</h2>
-                    <img src={(props.index + 1) % 30 < 3 ? owner.avatar_url : "https://avatars.githubusercontent.com/u/9892522?v=4"} data-src={owner.avatar_url} alt="" width="50%" />
-                    <p style={{ fontWeight: 600 }}><a href={html_url}>{full_name}</a></p>
+                    <img src={(props.index + 1) % 30 < 7 ? owner.avatar_url : "https://avatars.githubusercontent.com/u/9892522?v=4"} data-src={owner.avatar_url} alt="" width="50%" />
+                    <p style={{ fontWeight: 600 }}><a href={html_url} target="_blank">{full_name}</a></p>
                 </div>
                 <div style={{ padding: '20px 40px' }}>
                     <div>
                         <i style={{ color: 'rgb(255, 191, 116)', width: '16px', textAlign: 'center' }} class="fa fa-user"></i>
-                        <a href={html_url}>{name}</a>
+                        <a href={html_url} target="_blank">{name}</a>
                     </div>
                     {
                         textConfig.map(item => <div><i style={{ color: item.color, width: '16px', textAlign: 'center' }} class={item.icon}></i>{item.data + ' ' + item.name}</div>)
