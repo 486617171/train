@@ -179,7 +179,7 @@
                                     <span style={{ fontSize: '30px', marginLeft: '10px' }}>{inputValue}</span>
                                 </div>
                                 <div style={{ lineHeight: '80px' }}>
-                                    <button onClick={this.closeBox}>X</button>
+                                    <button onClick={this.closeBox} style={{ borderRadius: '100%', width: '40px', height: '40px', backgroundColor: 'red', color: 'white', fontSize: '20px', border: 'none' }}>×</button>
                                 </div>
                             </div>
                     }
@@ -238,10 +238,14 @@
                             </div>
                             <div>
                                 <ul>
-                                    <li><i style={{ width: '16px', textAlign: 'center', marginRight: '4px' }} class="fa fa-location-arrow"></i>{location}</li>
-                                    <li><i style={{ width: '16px', textAlign: 'center', marginRight: '4px' }} class="fa fa-group"></i>{followers}</li>
-                                    <li><i style={{ width: '16px', textAlign: 'center', marginRight: '4px' }} class="fa fa-user-plus"></i>{following}</li>
-                                    <li><i style={{ width: '16px', textAlign: 'center', marginRight: '4px' }} class="fa fa-code"></i>{public_repos}</li>
+                                    {
+                                        [
+                                            { icon: 'fa fa-location-arrow', data: location },
+                                            { icon: 'fa fa-group', data: followers },
+                                            { icon: 'fa fa-user-plus', data: following },
+                                            { icon: 'fa fa-code', data: public_repos },
+                                        ].map(item => <li><i style={{ width: '16px', textAlign: 'center', marginRight: '4px' }} class={item.icon}></i>{item.data}</li>)
+                                    }
                                 </ul>
                             </div>
                         </div>) : <span><i class="fa fa-spin fa-spinner" />loading...</span>
