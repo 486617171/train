@@ -1,22 +1,19 @@
 import React from 'react';
-import { withRouter,Link } from 'react-router-dom';
+import Header from './layout/header';
+import Main from './layout/main';
+import Footer from './layout/footer';
+import styles from './app.less';
 
 function App(props) {
-    console.log(props);
     return (
-        <>
+        <div className={styles.container}>
             <div>
-                <Link to="/popular">popular</Link>
-                <Link to="/battle">battle</Link>
+                <Header />
+                <Main children={props.children} />
             </div>
-            {
-                props.children
-            }
-            <div>
-                
-            </div>
-        </>
+            <Footer></Footer>
+        </div>
     )
 }
 
-export default withRouter(App)
+export default App
