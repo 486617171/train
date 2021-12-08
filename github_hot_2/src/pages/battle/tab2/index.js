@@ -51,7 +51,7 @@ export default class Tab2 extends PureComponent {
                         <h2>{name}</h2>
                     </div>
                     <div>
-                        <ul>
+                        <ul className={styles.listUl}>
                             {
                                 [
                                     { icon: 'fa fa-location-arrow', data: location },

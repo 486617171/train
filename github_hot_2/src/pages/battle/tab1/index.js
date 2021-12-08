@@ -52,7 +52,6 @@ class InputItem extends PureComponent {
         };
     }
     submit = (e) => {
-        debugger
         let imgs = new Image();
         imgs.src = `https://github.com/${e.username}.png?size=200`;
         imgs.onload = () => {

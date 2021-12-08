@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import 'font-awesome/css/font-awesome.min.css';
-import Tab1 from './tab1';
-import Tab2 from './tab2';
+import Tab1 from '@/pages/battle/tab1';
+import Tab2 from '@/pages/battle/tab2';
 
 export default class Battle extends PureComponent {
     constructor(props) {
