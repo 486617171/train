@@ -1,16 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App.jsx';
-import 'antd/dist/antd.css';
-import { ConfigProvider } from 'antd';
-import zhCN from 'antd/lib/locale/zh_CN';
+import dva from 'dva';
+import model from './models/app.js';
+import App from './app.js';
+import { createHashHistory } from 'history';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ConfigProvider locale={zhCN}>
-      <App />
-    </ConfigProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const app = dva({
+    history:createHashHistory
+});
+
+app.model(model);
+
+app.router(()=><App />);
+
+app.start('#root');
