@@ -1,6 +1,7 @@
 import { getCartDatas } from '../services/app.js';
 import { getArrEqual } from '../util/tool.js';
 
+
 const model = {
 
     namespace: 'app',

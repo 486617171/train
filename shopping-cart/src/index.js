@@ -4,7 +4,7 @@ import App from './app.js';
 import { createHashHistory } from 'history';
 
 const app = dva({
-    history:createHashHistory
+    history:createHashHistory,
 });
 
 app.model(model);

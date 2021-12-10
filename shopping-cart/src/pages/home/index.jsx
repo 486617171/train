@@ -12,7 +12,7 @@ function Home({ app, dispatch }) {
         dispatch({
             type: 'app/fetchCartDataAsync'
         })
-    }, []);
+    }, [dispatch]);
 
 
     return (

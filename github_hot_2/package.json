@@ -76,7 +76,12 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "lint:fix": "eslint src/**/*.js",
+    "pretter:fix": "eslint src/**/*.js",
+    "...":"",
+    "cert:install": "letscrypt:",
+    "deploy:enterprise": "gh-pages -d enterpriseStation/ -e enterpriseStation/"
   },
   "eslintConfig": {
     "extends": [
@@ -84,6 +89,9 @@
       "react-app/jest"
     ]
   },
+  "lint-stage": [
+      "lint:fix", "pretter:fix"
+  ],
   "browserslist": {
     "production": [
       ">0.2%",
