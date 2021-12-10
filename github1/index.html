@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Hub Hot</title>
+    <link rel="stylesheet" href="./css/init.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+        integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <!-- 解析jsx -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+
+        function App() {
+            return (
+                <div>
+                    <Header />
+                    <Main />
+                    <Footer />
+                </div>
+            );
+        }
+
+        function Header() {
+            return (
+                <div style={{ height: '30px', lineHeight: '30px', fontSize: '20px' }}>
+                    <a href="javascript:void(0)" style={{ color: '#1890ff' }}>Popular</a>
+                    <a href="battle.html" style={{ marginLeft: '20px' }}>Battle</a>
+                </div>
+            );
+        }
+
+        class Main extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    currentType: 'All'
+                };
+                this.types = ['All', 'JavaScript', 'Ruby', 'Java', 'CSS'];
+            }
+
+            typeChange = (item) => {
+                if (item !== this.state.currentType) {
+                    this.setState({
+                        currentType: item
+                    })
+                }
+            }
+
+            render() {
+
+                const { currentType } = this.state;
+                return (
+                    <div>
+                        <div style={{ display: 'flex', height: '40px', lineHeight: '40px', width: '100%', justifyContent: 'center', fontSize: '18px' }}>
+                            {
+                                this.types.map(item => <div style={{ minWidth: '100px', textAlign: 'center' }}><a style={{ cursor: 'pointer', color: currentType === item ? '#1890ff' : '#000' }} onClick={() => { this.typeChange(item) }}>{item}</a></div>)
+                            }
+                        </div>
+                        <HotBox type={currentType} />
+                    </div>
+                );
+            }
+        }
+
+        function Footer() {
+            return <div style={{height:'48px',lineHeight:'48px',backgroundColor: 'rgb(239, 239, 239)',textAlign:'center'}}>
+                版权所有
+            </div>
+        }
+
+        class HotBox extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    type: this.props.type,
+                    data: [],
+                    total: 0,
+                    loading: true
+                };
+                this.page_nub = 1;
+                this.timer = null;
+                this.scrollTimer = null;
+            }
+
+            // 初始化获取数据
+            async componentDidMount() {
+                await this.getData(this.props.type);
+                window.addEventListener('scroll', this.throttle(() => {
+                    // 滚动加载更多
+                    // console.log(window.scrollY); 滚动条距离顶部
+                    // console.log(document.documentElement.clientHeight); 屏幕高度
+                    // console.log(document.body.scrollHeight); body整体高度
+                    if (window.scrollY + document.documentElement.clientHeight === document.body.scrollHeight) {
+                        // 判断加载的页数是否已超出
+                        if (this.page_nub < Math.ceil(this.state.total / 30)) {
+                            this.setState({
+                                loading: true
+                            }, () => {
+                                this.page_nub++;
+                                this.getData(this.state.type);
+                            })
+                        }
+                    }
+
+                    // 滚动加载图片
+                    let imgDoms = document.getElementsByTagName('img');
+                    for (let i = 0; i < imgDoms.length; i++) {
+                        if (imgDoms[i].offsetTop <= (document.documentElement.clientHeight + window.scrollY + 200) && imgDoms[i].getAttribute('data-src') !== imgDoms[i].getAttribute('src')) {
+                            imgDoms[i].setAttribute('src', imgDoms[i].getAttribute('data-src'));
+                        }
+                    }
+                }, 500));
+
+            }
+
+            componentWillUnmount(){
+                window.removeEventListener('scroll',this.throttle);
+            }
+
+
+            throttle = (func, delay) => {
+                var timer = null;
+                return function () {
+                    var context = this;
+                    var args = arguments;
+                    if (!timer) {
+                        timer = setTimeout(function () {
+                            func.apply(context, args);
+                            timer = null;
+                        }, delay);
+                    }
+                }
+            }
+
+            // 接收到props时触发 切换分类时先清除数据
+            componentWillReceiveProps(nextProps) {
+                this.page_nub = 1;
+                this.setState({
+                    data: [],
+                    loading: true
+                })
+            }
+
+            // 切换分类时重新获取数据
+            async componentDidUpdate() {
+                if (this.state.type !== this.props.type) {
+                    await this.getData(this.props.type);
+                }
+            }
+
+            // 获取数据
+            getData(type = '') {
+                if (this.timer) {
+                    clearTimeout(this.timer);
+                    this.timer = null;
+                }
+                this.timer = setTimeout(async () => {
+                    const { total_count, items } = await fetch(`https://api.github.com/search/repositories?q=stars:%3E1+${type ? 'language:' + type.toLowerCase() : ''}&sort=stars&order=desc&type=Repositories&page=${this.page_nub}`).then(res => res.json()).then(res => res);
+                    this.setState({
+                        data: [...this.state.data, ...items],
+                        total: total_count,
+                        type: this.props.type,
+                        loading: false
+                    }, () => {
+                        this.loadOnDemandInit();
+                    });
+                }, 800);
+            }
+
+            loadOnDemandInit = () => {
+                let imgDoms = document.getElementsByTagName('img');
+                for (let i = 0; i < imgDoms.length; i++) {
+                    if (imgDoms[i].offsetTop <= document.documentElement.clientHeight) {
+                        imgDoms[i].setAttribute('src', imgDoms[i].getAttribute('data-src'));
+                    }
+                }
+            }
+
+            render() {
+                const { data, total, loading } = this.state;
+                return <div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+                        {
+                            data.length > 0 ? data.map((item, index) => <HotItem data={item} index={index} />) : null
+                        }
+                    </div>
+
+                    <div style={{ textAlign: 'center', width: '100%', height: '40px', lineHeight: '40px' }}>
+                        {
+                            loading ? <span><i class="fa fa-spin fa-spinner" />loading...</span> : null
+                        }
+                    </div>
+                </div>
+            }
+        }
+
+        function HotItem(props) {
+
+            const { name, owner, stargazers_count, forks, open_issues, html_url, full_name } = props.data;
+
+            const textConfig = [
+                { icon: 'fa fa-star', name: 'stars', data: stargazers_count, color: 'rgb(255, 215, 0)' },
+                { icon: 'fa fa-code-fork', name: 'forks', data: forks, color: 'rgb(129, 195, 245)' },
+                { icon: 'fa fa-warning', name: 'Open issues', data: open_issues, color: 'rgb(241, 138, 147)' },
+            ];
+
+            return <div style={{ width: '23%', backgroundColor: 'rgba(0, 0, 0, 0.08)', marginTop: '20px', borderRadius: '8px' }}>
+                <div style={{ textAlign: 'center' }}>
+                    <h2>#{props.index + 1}</h2>
+                    <img src={(props.index + 1) % 30 < 7 ? owner.avatar_url : "https://avatars.githubusercontent.com/u/9892522?v=4"} data-src={owner.avatar_url} alt="" width="50%" />
+                    <p style={{ fontWeight: 600 }}><a href={html_url} target="_blank">{full_name}</a></p>
+                </div>
+                <div style={{ padding: '20px 40px' }}>
+                    <div>
+                        <i style={{ color: 'rgb(255, 191, 116)', width: '16px', textAlign: 'center' }} class="fa fa-user"></i>
+                        <a href={html_url} target="_blank">{name}</a>
+                    </div>
+                    {
+                        textConfig.map(item => <div><i style={{ color: item.color, width: '16px', textAlign: 'center' }} class={item.icon}></i>{item.data + ' ' + item.name}</div>)
+                    }
+                </div>
+            </div>
+        }
+
+
+        ReactDOM.render(
+            <App />,
+            document.getElementById('app')
+        );
+
+    </script>
+</body>
+
+</html>
