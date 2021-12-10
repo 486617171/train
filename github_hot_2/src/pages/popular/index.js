@@ -10,7 +10,7 @@ export default class Popular extends Component {
         this.state = {
             currentType: 'All'
         };
-        this.types = ['All', 'JavaScript', 'Ruby', 'Java', 'CSS'];
+        this.types = ['All', 'JavaScript', 'Ruby', 'Java' 'CSS'];
     }
 
     typeChange = (item) => {
